@@ -36,6 +36,7 @@ h1 { max-width: 760px; margin-bottom: 26px; font-size: clamp(50px, 7vw, 86px); l
 .hero-copy { max-width: 650px; margin-bottom: 36px; color: rgba(255,255,255,.84); font-size: 18px; }
 .hero-actions { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; }
 .button { display: inline-flex; min-height: 50px; align-items: center; justify-content: center; padding: 0 23px; border: 0; border-radius: 4px; background: var(--coral); color: var(--ink); font-weight: 700; }
+.phone-button { border: 1px solid rgba(255,255,255,.72); background: rgba(255,255,255,.08); color: var(--white); }
 .text-link { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.55); font-weight: 600; }
 .text-link span { margin-left: 18px; }
 .hero-note { position: absolute; right: 4%; bottom: 32px; z-index: 1; margin: 0; text-align: right; color: rgba(255,255,255,.62); font-size: 12px; letter-spacing: .06em; }

@@ -50,7 +50,7 @@ function layout({ title, description, canonical = siteUrl, body }) {
 }
 
 function hero(title, copy, local = "GYEONGBUK MATH TUTORING") {
-  return `<header class="hero"><div class="wrap hero-inner"><p class="eyebrow">${local}</p><h1>${title}</h1><p class="hero-copy">${copy}</p><div class="hero-actions"><a class="button" href="#grade">학년별 준비 보기</a><a class="text-link" href="#regions">22개 시군 찾기 <span>→</span></a></div></div><p class="hero-note">경상북도 중등·고등<br>개인별 수학 학습 설계</p></header>`;
+  return `<header class="hero"><div class="wrap hero-inner"><p class="eyebrow">${local}</p><h1>${title}</h1><p class="hero-copy">${copy}</p><div class="hero-actions"><a class="button" href="#grade">학년별 준비 보기</a><a class="button phone-button" href="tel:01029283614">010-2928-3614</a><a class="text-link" href="#regions">22개 시군 찾기 <span>→</span></a></div></div><p class="hero-note">경상북도 중등·고등<br>개인별 수학 학습 설계</p></header>`;
 }
 
 const proof = `<section class="proof"><div class="wrap proof-grid"><div><strong>01</strong><p><b>현재 위치부터</b>시험지와 학습 이력으로 개념, 연산, 문제 해석의 약점을 구분합니다.</p></div><div><strong>02</strong><p><b>학교 진도에 맞게</b>목표 성적과 가능한 학습 시간을 반영해 현실적인 계획을 세웁니다.</p></div><div><strong>03</strong><p><b>스스로 설명하도록</b>풀이 이유를 말하고 유사 문제에 적용할 때까지 확인합니다.</p></div></div></section>`;
