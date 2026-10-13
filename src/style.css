@@ -76,6 +76,51 @@ h2 { margin-bottom: 0; font-size: clamp(34px, 5vw, 54px); line-height: 1.3; }
 .region-link span { margin-top: 6px; color: rgba(255,255,255,.55); font-size: 12px; }
 .region-link b { position: absolute; right: 20px; top: 20px; color: var(--coral); }
 
+.modal-open { overflow: hidden; }
+.region-select {
+  width: min(920px, calc(100% - 40px));
+  max-height: calc(100vh - 72px);
+  padding: 34px 24px 24px;
+  border: 0;
+  border-radius: 24px;
+  color: var(--ink);
+  background: #fbfaf6;
+  box-shadow: 0 28px 80px rgba(5, 24, 18, .34);
+}
+.region-select::backdrop { background: rgba(4, 31, 23, .82); backdrop-filter: blur(4px); }
+.region-select-head { display: flex; justify-content: space-between; gap: 24px; padding: 0 4px 20px; }
+.region-select-head .eyebrow { margin-bottom: 6px; }
+.region-select-head h2 { font-size: clamp(26px, 4vw, 38px); }
+.region-select-head > div > p:last-child { margin: 8px 0 0; color: var(--muted); font-size: 14px; }
+.region-select-close {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  background: transparent;
+  font: 500 32px/1 var(--sans);
+  cursor: pointer;
+}
+.region-select-close:hover, .region-select-close:focus-visible { color: var(--ink); background: #e9eee9; }
+.region-select-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-height: min(54vh, 520px); overflow-y: auto; padding-right: 8px; scrollbar-color: #87918b transparent; scrollbar-width: thin; }
+.region-select-card {
+  min-height: 126px;
+  padding: 18px 12px 14px;
+  border: 1px solid #cfddd6;
+  border-radius: 15px;
+  background: #edf5f1;
+  text-align: center;
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.region-select-card:hover, .region-select-card:focus-visible { border-color: var(--forest); box-shadow: 0 8px 20px rgba(23, 79, 61, .1); transform: translateY(-2px); outline: none; }
+.region-select-card strong { display: flex; align-items: center; justify-content: center; gap: 9px; padding-bottom: 10px; border-bottom: 1px solid #d4e2db; font-family: var(--serif); font-size: 18px; }
+.region-select-card strong span { width: 11px; height: 11px; border-radius: 50%; background: var(--coral); }
+.region-select-card small { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; padding-top: 10px; }
+.region-select-card small span { padding: 2px 8px; border-radius: 999px; color: var(--muted); background: rgba(255,255,255,.9); font-size: 11px; line-height: 1.5; }
+
 .philosophy { display: grid; grid-template-columns: 1fr 1fr; padding: 0; background: var(--white); }
 .photo { min-height: 650px; background: url('https://images.unsplash.com/photo-1453738773917-9c3eff1db985?auto=format&fit=crop&w=1400&q=84') center/cover; }
 .philosophy-copy { display: flex; flex-direction: column; justify-content: center; padding: 90px max(7vw, 46px); }
@@ -106,6 +151,7 @@ footer small { grid-column: 1 / -1; padding-top: 28px; border-top: 1px solid rgb
   .region-grid { grid-template-columns: repeat(3, 1fr); }
   .philosophy { grid-template-columns: 1fr; }
   .photo { min-height: 470px; }
+  .region-select-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 600px) {
@@ -131,4 +177,13 @@ footer small { grid-column: 1 / -1; padding-top: 28px; border-top: 1px solid rgb
   .footer-inner > div:nth-child(2) { flex-wrap: wrap; }
   .mobile-bar { position: fixed; z-index: 20; bottom: 0; left: 0; width: 100%; height: 60px; display: block; }
   .mobile-bar a { height: 100%; display: grid; place-items: center; background: var(--coral); color: var(--ink); font-weight: 700; }
+  .region-select { width: calc(100% - 20px); max-height: calc(100vh - 20px); padding: 24px 14px 14px; border-radius: 18px; }
+  .region-select-head { gap: 10px; padding: 0 2px 16px; }
+  .region-select-head h2 { font-size: 25px; line-height: 1.35; }
+  .region-select-head > div > p:last-child { font-size: 13px; }
+  .region-select-close { width: 36px; height: 36px; font-size: 28px; }
+  .region-select-grid { grid-template-columns: 1fr; max-height: 57vh; padding-right: 5px; }
+  .region-select-card { min-height: auto; padding: 14px 10px 12px; }
+  .region-select-card strong { padding-bottom: 8px; }
+  .region-select-card small { padding-top: 8px; }
 }
