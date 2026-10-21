@@ -127,7 +127,7 @@ function layout({ title, description, canonical = siteUrl, body, schemas = [] })
     areaServed: regions.map(({ name, type }) => ({ "@type": "AdministrativeArea", name: `경상북도 ${name}${type}` }))
   };
   const jsonLd = [organization, ...schemas].map(schema => `<script type="application/ld+json">${JSON.stringify(schema)}</script>`).join("");
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="naver-site-verification" content="da1ddc6d11fbaf9ca190d7ff71413f40b0220036"><meta name="google-site-verification" content="mgftAe9RcXTmkuF04LUcLRUBY-naUxZumX5YV-7Uu88"><title>${title}</title><meta name="description" content="${description}"><meta name="robots" content="index,follow"><link rel="canonical" href="${canonical}"><link rel="alternate" type="application/rss+xml" title="${siteName}" href="${siteUrl}/rss.xml"><meta property="og:type" content="website"><meta property="og:site_name" content="${siteName}"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="${title}"><meta property="og:description" content="${description}"><meta property="og:url" content="${canonical}"><meta property="og:image" content="${ogImage}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${title}"><meta name="twitter:description" content="${description}"><meta name="twitter:image" content="${ogImage}"><link rel="stylesheet" href="/assets/style.css">${jsonLd}</head><body><nav><div class="wrap nav-inner"><a class="brand" href="/">${siteName}</a><div class="nav-links"><a href="/#program">수업 방식</a><a href="/#levels">초등·중등·고등</a><a href="/#regions">지역 찾기</a><a href="${tel}">전화 상담</a></div></div></nav>${body}<div class="mobile-bar"><a href="${tel}">전화 상담</a><a href="/#regions">우리 지역 찾기</a></div></body></html>`;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="naver-site-verification" content="da1ddc6d11fbaf9ca190d7ff71413f40b0220036"><meta name="google-site-verification" content="mgftAe9RcXTmkuF04LUcLRUBY-naUxZumX5YV-7Uu88"><title>${title}</title><meta name="description" content="${description}"><meta name="robots" content="index,follow"><link rel="canonical" href="${canonical}"><link rel="alternate" type="application/rss+xml" title="${siteName}" href="${siteUrl}/rss.xml"><meta property="og:type" content="website"><meta property="og:site_name" content="${siteName}"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="${title}"><meta property="og:description" content="${description}"><meta property="og:url" content="${canonical}"><meta property="og:image" content="${ogImage}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${title}"><meta name="twitter:description" content="${description}"><meta name="twitter:image" content="${ogImage}"><link rel="icon" href="/favicon.ico" sizes="32x32"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/style.css">${jsonLd}</head><body><nav><div class="wrap nav-inner"><a class="brand" href="/">${siteName}</a><div class="nav-links"><a href="/#program">수업 방식</a><a href="/#levels">초등·중등·고등</a><a href="/#regions">지역 찾기</a><a href="${tel}">전화 상담</a></div></div></nav>${body}<div class="mobile-bar"><a href="${tel}">전화 상담</a><a href="/#regions">우리 지역 찾기</a></div></body></html>`;
 }
 
 function hero({ title, copy, eyebrow = "GYEONGBUK MATH TUTORING", crumbs = [], primary = ["#levels", "초등·중등·고등 수업 보기"], secondary = ["#regions", "22개 시군 찾기"] }) {
@@ -221,6 +221,38 @@ function levelPage(region, level) {
   return { html: layout({ title, description, canonical: `${siteUrl}${url}`, body, schemas: [breadcrumbSchema(crumbs), faqSchema(faqs), service] }), title, description };
 }
 
+function faviconIco(size = 32) {
+  const pixels = Buffer.alloc(size * size * 4);
+  const center = (size - 1) / 2;
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const offset = ((size - 1 - y) * size + x) * 4;
+      const corner = Math.max(Math.abs(x - center) - (center - 6), 0) ** 2 + Math.max(Math.abs(y - center) - (center - 6), 0) ** 2 > 36;
+      const dot = (x - center) ** 2 + (y - center) ** 2 <= 49;
+      const [r, g, b, a] = corner ? [0, 0, 0, 0] : dot ? [0xef, 0x76, 0x5f, 255] : [0x17, 0x4f, 0x3d, 255];
+      pixels.set([b, g, r, a], offset);
+    }
+  }
+  const mask = Buffer.alloc(size * Math.ceil(size / 32) * 4);
+  const header = Buffer.alloc(6 + 16 + 40);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(1, 4);
+  header.writeUInt8(size, 6);
+  header.writeUInt8(size, 7);
+  header.writeUInt16LE(1, 10);
+  header.writeUInt16LE(32, 12);
+  header.writeUInt32LE(40 + pixels.length + mask.length, 14);
+  header.writeUInt32LE(22, 18);
+  header.writeUInt32LE(40, 22);
+  header.writeInt32LE(size, 26);
+  header.writeInt32LE(size * 2, 30);
+  header.writeUInt16LE(1, 34);
+  header.writeUInt16LE(32, 36);
+  header.writeUInt32LE(pixels.length + mask.length, 42);
+  return Buffer.concat([header, pixels, mask]);
+}
+const faviconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="#174f3d"/><circle cx="16" cy="16" r="7" fill="#ef765f"/></svg>\n`;
+
 await rm(dist, { recursive: true, force: true });
 await mkdir(path.join(dist, "assets"), { recursive: true });
 await writeFile(path.join(dist, "assets", "style.css"), css);
@@ -244,5 +276,7 @@ await writeFile(path.join(dist, "rss.xml"), `<?xml version="1.0" encoding="UTF-8
 await writeFile(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
 await writeFile(path.join(dist, "CNAME"), "tutornow.kr\n");
 await writeFile(path.join(dist, ".nojekyll"), "");
+await writeFile(path.join(dist, "favicon.ico"), faviconIco());
+await writeFile(path.join(dist, "favicon.svg"), faviconSvg);
 await writeFile(path.join(dist, "404.html"), layout({ title: `페이지를 찾을 수 없습니다 | ${siteName}`, description: "요청하신 페이지를 찾을 수 없습니다.", body: `<main class="not-found"><div><p class="eyebrow dark">404 ERROR</p><h1>페이지를 찾을 수 없습니다</h1><p>주소가 변경되었거나 존재하지 않는 페이지입니다.</p><a class="button" href="/">홈으로 돌아가기</a></div></main>${footer}` }));
 console.log(`Built ${pages.length} pages in ${dist}`);
