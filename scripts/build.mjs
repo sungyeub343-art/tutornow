@@ -174,8 +174,145 @@ const levelSection = region => {
 
 const regionSelector = `<dialog class="region-select" aria-labelledby="region-select-title"><div class="region-select-head"><div><p class="eyebrow dark">REGION SELECT</p><h2 id="region-select-title">어느 지역의 수학과외를 찾으시나요?</h2><p>시·군을 선택하면 해당 지역 안내로 바로 이동합니다.</p></div><button class="region-select-close" type="button" aria-label="지역 선택 창 닫기">×</button></div><div class="region-select-grid">${regionSelectCards}</div></dialog><script>(() => { try { if (sessionStorage.getItem("regionSelectShown")) return; sessionStorage.setItem("regionSelectShown", "1"); } catch {} const dialog = document.querySelector(".region-select"); const closeButton = dialog.querySelector(".region-select-close"); dialog.showModal(); document.body.classList.add("modal-open"); const close = () => { dialog.close(); document.body.classList.remove("modal-open"); }; closeButton.addEventListener("click", close); dialog.addEventListener("cancel", () => document.body.classList.remove("modal-open")); dialog.addEventListener("click", event => { if (event.target === dialog) close(); }); })();</script>`;
 const philosophy = `<section class="philosophy"><div class="photo" role="img" aria-label="책상에서 수학을 공부하는 학생"></div><div class="philosophy-copy"><p class="eyebrow dark">STUDY WITH DIRECTION</p><h2>과외가 없는 날에도<br>혼자 풀 수 있도록</h2><p>문제를 읽고 조건을 표시하고 풀이를 검토하는 과정을 반복합니다. 정답만 맞히는 수업을 넘어, 새로운 문제 앞에서도 시작할 수 있는 자기만의 기준을 만듭니다.</p><ul><li>학교별 시험 범위와 일정 반영</li><li>매 수업 오답 원인 기록</li><li>학년과 목표에 맞춘 진도 조정</li></ul></div></section>`;
+const programs = [
+  {
+    slug: "online", name: "온라인 수학과외", eyebrow: "ONLINE MATH TUTORING",
+    title: "경북 온라인 수학과외 | 화상 1:1 수학수업 · 초등·중등·고등",
+    description: `거리와 일정 때문에 대면 수업이 어려운 경북 학생을 위한 화상 1:1 온라인 수학과외. 초등 기초수학부터 고등 내신·수능수학까지. 상담 ${phone}.`,
+    h1: "경북 온라인<br>수학과외",
+    copy: "울릉부터 봉화, 영양까지 거리와 통학 시간에 상관없이 받는 화상 1:1 수학수업. 풀이 과정을 실시간으로 보며 대면 수업처럼 꼼꼼하게 확인합니다.",
+    summary: "읍면·섬 지역, 바쁜 일정에도 받을 수 있는 화상 1:1 수학수업",
+    lead: "온라인 수학과외는 이렇게 진행합니다",
+    leadCopy: "화면 너머에서도 학생이 어디서 막히는지 놓치지 않도록, 풀이를 직접 보고 설명을 듣는 방식으로 수업합니다.",
+    cards: [
+      ["화상 1:1 수학수업", "실시간 화상으로 개념을 설명하고, 학생이 같은 문제를 직접 풀며 말로 설명하는 순서로 진행합니다. 녹화 강의처럼 일방적으로 듣기만 하지 않습니다."],
+      ["풀이 과정 실시간 확인", "공책을 카메라로 비추거나 태블릿 필기 화면을 공유해 식을 세우는 단계부터 확인합니다. 답이 맞아도 풀이가 흔들리면 다시 짚습니다."],
+      ["숙제·오답 관리", "수업이 끝나면 복습 분량을 정하고, 다음 수업 시작 전에 숙제와 오답을 먼저 점검해 공백 없이 이어갑니다."],
+      ["읍면·섬 지역 학생", "울릉, 영양, 봉화, 청송처럼 선택할 수 있는 수학 수업이 적은 지역에서도 학년과 목표에 맞춘 1:1 수업을 받을 수 있습니다."],
+      ["대면 수업과 병행", "평소에는 온라인으로, 시험 직전이나 방학에는 대면으로 하는 식으로 일정과 거리에 맞춰 방식을 섞을 수 있습니다."],
+      ["준비물", "카메라가 있는 노트북이나 태블릿, 이어폰, 공책이면 충분합니다. 첫 수업 전에 연결 상태와 화면 공유를 함께 확인합니다."]
+    ],
+    faqs: [
+      ["온라인 수학과외도 효과가 있나요?", "풀이 과정을 실시간으로 확인하고 숙제와 오답을 매 수업 점검하면 대면 수업과 큰 차이 없이 진행할 수 있습니다. 집중이 어려운 학생은 수업 시간을 짧게 나누는 등 방식을 조정합니다."],
+      ["초등학생도 온라인 수학수업이 가능한가요?", "가능합니다. 다만 저학년은 화면 앞 집중 시간이 짧으므로 수업 시간을 짧게 하고, 보호자께 기기 준비와 숙제 확인을 부탁드리는 경우가 있습니다."],
+      ["어떤 기기가 필요한가요?", "카메라와 마이크가 있는 노트북이나 태블릿이면 됩니다. 스마트폰은 화면이 작아 풀이 확인이 어려워 권장하지 않습니다."]
+    ]
+  },
+  {
+    slug: "winter", name: "겨울방학 수학 선행", eyebrow: "WINTER BREAK PLAN",
+    title: "겨울방학 수학 선행 | 예비중1·예비고1 수학 준비 1:1 과외 · 경북",
+    description: `경북 예비중1·예비중2·예비중3·예비고1·예비고2·예비고3 겨울방학 수학 선행과 복습 계획. 학년 전환기 빈틈을 채우는 1:1 수학과외. 상담 ${phone}.`,
+    h1: "겨울방학<br>수학 선행 계획",
+    copy: "방학은 지난 학년의 빈틈을 메우고 다음 학년을 준비할 수 있는 가장 긴 시간입니다. 복습과 선행의 비율을 학생별로 정해 새 학기를 준비합니다.",
+    summary: "복습과 선행의 비율을 정해 새 학년을 준비하는 방학 수학 계획",
+    lead: "겨울방학 수학, 이 순서로 준비합니다",
+    leadCopy: "무작정 진도를 빼기보다 지난 학년의 이해도를 먼저 확인하고, 다음 학년 첫 시험까지 이어지는 계획을 세웁니다.",
+    cards: [
+      ["12월 · 진단", "2학기 기말고사 시험지와 오답을 분석해 다음 학년으로 넘어가기 전에 꼭 다시 봐야 할 단원을 찾습니다."],
+      ["1월 · 선행 집중", "방학 중 가장 긴 시간을 다음 학년 1학기 핵심 단원에 씁니다. 개념 이해, 기본 유형, 확인 테스트 순서로 진행합니다."],
+      ["2월 · 정리와 신학기 대비", "선행한 단원을 다시 풀며 정리하고, 3월 첫 수업과 첫 시험 범위에 맞춰 실전 감각을 만듭니다."],
+      ["복습과 선행의 비율", "기초가 흔들리는 학생은 복습 비중을 높이고, 개념이 탄탄한 학생은 선행 비중을 높입니다. 모든 학생에게 같은 진도를 적용하지 않습니다."],
+      ["방학 하루 수학공부 루틴", "수업이 없는 날에도 정해진 시간에 복습과 숙제를 하도록 주간 계획표를 함께 만들고 매 수업마다 점검합니다."],
+      ["학년 전환기 주의 단원", "예비중1은 정수와 문자, 예비고1은 공통수학의 다항식과 방정식처럼 학년이 바뀔 때 갑자기 어려워지는 단원을 먼저 준비합니다."]
+    ],
+    grades: ["예비중1", "예비중2", "예비중3", "예비고1", "예비고2", "예비고3"],
+    faqs: [
+      ["겨울방학 수학 선행은 어디까지 하는 것이 좋을까요?", "학생마다 다르지만 보통 다음 학년 1학기 범위를 이해하고 기본 문제를 스스로 풀 수 있는 수준을 목표로 합니다. 기초가 부족하면 선행보다 복습을 먼저 합니다."],
+      ["예비고1은 겨울방학에 무엇을 준비해야 하나요?", "중학 수학 중 인수분해, 이차방정식, 이차함수를 점검한 뒤 공통수학1의 다항식, 방정식과 부등식을 먼저 준비하는 것을 권합니다."],
+      ["방학에만 수업을 받을 수도 있나요?", "가능합니다. 방학 기간에 맞춘 단기 계획을 세우고, 개학 후에는 학기 중 수업으로 이어갈지 상담으로 정합니다."]
+    ]
+  },
+  {
+    slug: "exam", name: "중간·기말고사 수학 대비", eyebrow: "SCHOOL EXAM PREP",
+    title: "중간·기말고사 수학 대비 | 중등·고등 수학내신 1:1 과외 · 경북",
+    description: `경북 중학교·고등학교 중간고사, 기말고사 수학내신 대비. 학교별 시험 범위와 기출 경향에 맞춘 4주 계획과 서술형 대비. 상담 ${phone}.`,
+    h1: "중간·기말고사<br>수학 내신 대비",
+    copy: "학교마다 시험 범위, 부교재, 출제 경향이 다릅니다. 우리 학교 시험에 맞춘 4주 계획으로 중등·고등 수학내신을 준비합니다.",
+    summary: "학교별 범위와 기출 경향에 맞춘 4주 시험 대비 계획",
+    lead: "시험 4주 전부터 이렇게 준비합니다",
+    leadCopy: "시험 직전 벼락치기 대신, 4주 동안 개념에서 실전까지 단계별로 끌어올립니다.",
+    cards: [
+      ["4주 전 · 개념 정리", "시험 범위 전 단원의 개념과 공식을 학생이 직접 설명할 수 있는지 확인하고, 약한 단원을 표시합니다."],
+      ["3주 전 · 교과서·부교재", "학교 시험은 교과서와 부교재, 학습지에서 많이 출제됩니다. 해당 문제를 반복해 풀고 변형 문제로 확인합니다."],
+      ["2주 전 · 기출·변형", "해당 학교의 지난 기출 경향을 분석하고 자주 나오는 유형과 고난도 문항을 집중 연습합니다."],
+      ["1주 전 · 실전 모의", "실제 시험 시간에 맞춰 모의 시험을 보고 시간 배분, 검토 순서, 실수 유형을 점검합니다."],
+      ["서술형 감점 점검", "식의 전개, 조건 표시, 단위와 결론 쓰기처럼 서술형에서 반복되는 감점 요인을 답안 단위로 고칩니다."],
+      ["시험 후 오답 분석", "시험이 끝나면 틀린 문제의 원인을 개념·계산·해석으로 나눠 기록하고 다음 시험 계획에 반영합니다."]
+    ],
+    faqs: [
+      ["수학 시험 대비는 언제부터 시작해야 하나요?", "보통 시험 4주 전부터 시험 대비 모드로 전환합니다. 평소에는 현행 진도와 복습을 하다가, 범위가 나오면 학교별 계획으로 바꿉니다."],
+      ["고등학교 내신 5등급제에서 수학내신이 왜 중요한가요?", "2025년 고1부터 내신이 5등급제로 바뀌어 등급 구간이 넓어진 만큼, 한두 문제 실수로 등급이 갈리는 부담은 여전합니다. 서술형과 실수 관리가 특히 중요합니다."],
+      ["학교마다 시험이 다른데 어떻게 대비하나요?", "학생이 다니는 학교의 시험 범위, 부교재, 지난 시험지를 먼저 확인하고 그 학교의 출제 경향에 맞춰 문제를 고릅니다."]
+    ]
+  },
+  {
+    slug: "basic", name: "수포자 탈출 기초수학", eyebrow: "BACK TO BASICS",
+    title: "수포자 탈출 기초수학 | 수학 기초부터 다시 1:1 과외 · 경북",
+    description: `수학이 어려워 포기하고 싶은 경북 초등·중등·고등 학생을 위한 기초수학 1:1 과외. 막힌 학년까지 거슬러 진단하고 현행 진도로 연결합니다. 상담 ${phone}.`,
+    h1: "수학 기초부터<br>다시 시작하기",
+    copy: "수학을 포기하고 싶어지는 이유는 대부분 이전 학년 어딘가에서 생긴 빈틈입니다. 그 지점을 찾아 다시 쌓으면 현행 진도도 따라갈 수 있습니다.",
+    summary: "막힌 학년까지 거슬러 진단하고 다시 쌓는 1:1 기초수학",
+    lead: "수포자 탈출, 이렇게 접근합니다",
+    leadCopy: "어려운 문제를 더 많이 푸는 대신, 막힌 지점을 정확히 찾고 작은 성공을 쌓는 데서 시작합니다.",
+    cards: [
+      ["막힌 지점 진단", "현재 학년 문제부터 한 학년씩 거꾸로 진단해 어느 단원에서 이해가 끊겼는지 찾습니다."],
+      ["거꾸로 학년 복습", "고등학생이라도 필요하면 중학 수학, 초등 분수까지 되돌아갑니다. 꼭 필요한 단원만 골라 빠르게 복습합니다."],
+      ["연산 자동화", "분수·음수 계산, 식 정리처럼 기본 연산이 느리면 응용 문제를 풀 여유가 없습니다. 짧고 꾸준한 연습으로 속도와 정확도를 올립니다."],
+      ["문장제 읽는 법", "문제를 읽고 조건에 표시하고 식으로 바꾸는 과정을 단계별로 연습해, 문장이 길어도 시작할 수 있게 합니다."],
+      ["작은 성공 경험", "혼자 끝까지 풀어낸 경험이 쌓여야 수학에 대한 거부감이 줄어듭니다. 난이도를 조절해 성공하는 문제부터 늘려 갑니다."],
+      ["현행 진도로 연결", "복습한 기초 개념이 현재 학년의 어떤 단원과 이어지는지 연결해 학교 수업과 시험을 따라갈 수 있게 합니다."]
+    ],
+    faqs: [
+      ["고등학생인데 중학 수학부터 다시 해도 늦지 않을까요?", "늦지 않습니다. 모든 중학 과정을 다시 하는 것이 아니라 현재 단원에 필요한 개념만 골라 복습하므로, 현행 진도와 병행할 수 있습니다."],
+      ["기초를 다시 잡는 데 얼마나 걸리나요?", "빈틈의 범위와 학습 시간에 따라 다릅니다. 첫 진단 후 필요한 단원과 예상 기간을 구체적으로 안내해 드립니다."],
+      ["수학에 흥미가 없는 아이도 가능한가요?", "흥미보다 먼저 자신감이 필요한 경우가 많습니다. 풀 수 있는 문제부터 시작해 스스로 풀어내는 경험을 늘리는 방식으로 수업합니다."]
+    ]
+  },
+  {
+    slug: "suneung-2028", name: "2028 수능 수학 개편 대비", eyebrow: "2028 SUNEUNG",
+    title: "2028 수능 수학 개편 대비 | 대수·미적분Ⅰ·확률과 통계 · 경북 수학과외",
+    description: `2028학년도 수능 수학 개편과 고교 내신 5등급제 대비. 대수·미적분Ⅰ·확률과 통계 공통 출제에 맞춘 경북 고등·예비고 1:1 수학과외. 상담 ${phone}.`,
+    h1: "2028 수능 수학<br>개편 대비",
+    copy: "2028학년도 수능부터 수학은 선택과목 없이 대수, 미적분Ⅰ, 확률과 통계를 모두 공통으로 봅니다. 바뀐 범위와 내신 5등급제에 맞춰 준비 순서를 다시 짭니다.",
+    summary: "선택과목 없는 공통 수능 범위와 내신 5등급제에 맞춘 준비",
+    lead: "2028 수능 수학, 무엇이 달라지나요",
+    leadCopy: "2025년 고1(2028학년도 수능 응시)부터 적용되는 주요 변화와 학년별 준비 방향입니다. 세부 사항은 교육부와 한국교육과정평가원 발표를 함께 확인하세요.",
+    cards: [
+      ["선택과목 폐지", "기존의 확률과 통계·미적분·기하 중 택1 방식이 없어지고, 모든 수험생이 같은 범위의 수학 시험을 봅니다."],
+      ["공통 범위: 대수·미적분Ⅰ·확률과 통계", "세 과목이 모두 수능 출제 범위입니다. 그동안 확률과 통계를 선택하지 않던 이과 성향 학생도 준비가 필요합니다."],
+      ["미적분Ⅱ·기하는 범위 제외", "미적분Ⅱ와 기하는 수능 출제 범위에서 빠지지만, 진로에 따라 학교에서 이수하고 내신으로 평가받을 수 있습니다."],
+      ["내신 5등급제", "2025년 고1부터 고교 내신이 9등급에서 5등급 상대평가로 바뀌었습니다. 공통수학1·2 내신이 첫 시험부터 중요합니다."],
+      ["고교학점제와 과목 선택", "고교학점제에 따라 학생이 과목을 선택해 이수합니다. 희망 학과와 연결해 수학 과목 이수 계획을 세우는 것이 좋습니다."],
+      ["기출 활용법", "이전 교육과정의 수능 기출 중 새 범위에 해당하는 문항을 골라 활용하고, 공통 범위에 맞는 실전 연습을 늘립니다."]
+    ],
+    grades: ["중3", "고1", "고2"],
+    faqs: [
+      ["2028 수능 수학은 어떤 과목에서 출제되나요?", "대수, 미적분Ⅰ, 확률과 통계에서 출제되며 선택과목 없이 모든 수험생이 같은 시험을 봅니다."],
+      ["기존 수능 기출문제는 쓸 수 없나요?", "쓸 수 있습니다. 새 범위에 해당하는 단원의 문항을 골라 활용하면 좋은 연습이 됩니다. 범위에서 빠진 단원 문항은 제외합니다."],
+      ["중3인데 지금부터 무엇을 준비하면 좋을까요?", "중학 수학의 이차방정식, 이차함수를 탄탄히 하고 공통수학1·2를 미리 준비하면 고1 첫 내신과 이후 수능 공통 범위 학습이 수월해집니다."]
+    ]
+  }
+];
+
+const programUrl = program => `/programs/${program.slug}/`;
+const programSection = `<section class="programs" id="programs"><div class="wrap"><div class="section-head"><div><p class="eyebrow dark">MATH PROGRAMS</p><h2>지금 필요한<br>수학 프로그램</h2></div><p>시험, 방학, 입시 제도 변화처럼 시기와 상황에 맞춰 필요한 수학 수업을 골라 보세요.</p></div><div class="program-grid">${programs.map(program => `<a class="program-card" href="${programUrl(program)}"><span>${program.eyebrow}</span><strong>${program.name}</strong><p>${program.summary}</p><b aria-hidden="true">→</b></a>`).join("")}</div></div></section>`;
+
+function programPage(program) {
+  const url = programUrl(program);
+  const crumbs = [["홈", "/"], [program.name, url]];
+  const faqs = [...program.faqs, contactFaq(program.name)];
+  const cards = program.cards.map(([heading, text], index) => `<article class="grade"><span>0${index + 1}</span><h3>${heading}</h3><p>${text}</p></article>`).join("");
+  const content = `<section class="topics" id="topics"><div class="wrap"><div class="section-head"><div><p class="eyebrow dark">${program.eyebrow}</p><h2>${program.lead}</h2></div><p>${program.leadCopy}</p></div><div class="grade-grid">${cards}</div></div></section>`;
+  const gradeBlock = program.grades ? `<section class="grades" id="grades"><div class="wrap"><div class="section-head"><div><p class="eyebrow dark">BY GRADE</p><h2>학년별<br>${program.name}</h2></div><p>학년마다 준비해야 할 단원이 다릅니다. 현재 학년과 다음 학년의 연결을 기준으로 계획합니다.</p></div><div class="grade-grid">${program.grades.map((grade, index) => `<article class="grade"><span>0${index + 1}</span><h3>${grade} ${program.name}</h3><p>${gradeInfo[grade]}</p></article>`).join("")}</div></div></section>` : "";
+  const others = programs.filter(other => other !== program).map(other => `<a href="${programUrl(other)}">${other.name}</a>`).join("");
+  const related = `<section class="local"><div class="wrap local-grid"><div><p class="eyebrow dark">MORE PROGRAMS</p><h2>함께 보면 좋은<br>수학 프로그램</h2></div><div><p>이 프로그램은 경상북도 22개 시군 학생을 대상으로 대면 또는 온라인 1:1 수업으로 진행합니다. 아래에서 다른 프로그램과 지역별 안내도 확인해 보세요.</p><p class="sibling-links">${others}</p></div></div></section>`;
+  const body = `${hero({ title: program.h1, copy: program.copy, eyebrow: program.eyebrow, crumbs, primary: ["#topics", "자세히 보기"], secondary: ["#regions", "우리 지역 찾기"] })}${content}${gradeBlock}${related}${faqSection(`${program.name}<br>자주 묻는 질문`, faqs)}${cta(`${program.name},<br>상담으로 시작하세요`, "학년과 최근 시험 결과를 알려주시면 지금 필요한 수업 방향을 안내해 드립니다.")}${regionsSection()}${footer}`;
+  const service = { "@context": "https://schema.org", "@type": "Service", name: `경북 ${program.name}`, serviceType: program.name, description: program.description, provider: { "@type": "EducationalOrganization", name: siteName, url: siteUrl, telephone: "+82-10-2928-3614" }, areaServed: { "@type": "AdministrativeArea", name: "경상북도" } };
+  return layout({ title: program.title, description: program.description, canonical: `${siteUrl}${url}`, body, schemas: [breadcrumbSchema(crumbs), faqSchema(faqs), service] });
+}
+
 const footerRegions = regions.map(region => `<a href="${regionUrl(region)}">${region.name} 수학과외</a>`).join("");
-const footer = `<footer><div class="wrap footer-inner"><div><a class="brand" href="/">${siteName}</a><p>경상북도 초등·중등·고등 1:1 맞춤 수학 지도 · 상담 <a href="${tel}">${phone}</a></p></div><div><a href="/#program">수업 방식</a><a href="/#levels">초등·중등·고등</a><a href="/#regions">지역별 안내</a></div><p class="footer-regions">${footerRegions}</p><small>© 2026 ${siteName}. All rights reserved.</small></div></footer>`;
+const footer = `<footer><div class="wrap footer-inner"><div><a class="brand" href="/">${siteName}</a><p>경상북도 초등·중등·고등 1:1 맞춤 수학 지도 · 상담 <a href="${tel}">${phone}</a></p></div><div><a href="/#program">수업 방식</a><a href="/#levels">초등·중등·고등</a><a href="/#regions">지역별 안내</a></div><p class="footer-regions">${programs.map(program => `<a href="${programUrl(program)}">${program.name}</a>`).join("")}</p><p class="footer-regions">${footerRegions}</p><small>© 2026 ${siteName}. All rights reserved.</small></div></footer>`;
 
 function homePage() {
   const title = "경북 수학과외 | 초등·중등·고등 1:1 수학수업·내신·수능대비";
@@ -185,7 +322,7 @@ function homePage() {
     ["초등학생도 수학과외가 가능한가요?", "초등 1학년부터 고등 3학년까지 모두 가능합니다. 초등은 기초수학과 수학공부 습관, 중등은 수학내신, 고등은 내신과 수능수학을 중심으로 수업합니다."],
     contactFaq("경북 수학과외")
   ];
-  const body = `${hero({ title: "경북 수학과외", copy: "포항부터 울릉까지, 학생의 현재 실력과 학교 진도에 맞춘 초등·중등·고등 1:1 수학수업. 기초수학부터 수학내신, 수능수학까지 이어지는 공부의 기준을 함께 세웁니다." })}${proof}${process}${levelSection()}${gradeSection}${regionsSection()}${philosophy}${faqSection("경북 수학과외<br>자주 묻는 질문", faqs)}${cta("우리 아이 수학,<br>어디서부터 시작할까요?", "학년과 최근 시험 결과를 알려주시면 지금 필요한 수업 방향을 안내해 드립니다.")}${footer}${regionSelector}`;
+  const body = `${hero({ title: "경북 수학과외", copy: "포항부터 울릉까지, 학생의 현재 실력과 학교 진도에 맞춘 초등·중등·고등 1:1 수학수업. 기초수학부터 수학내신, 수능수학까지 이어지는 공부의 기준을 함께 세웁니다." })}${proof}${process}${levelSection()}${programSection}${gradeSection}${regionsSection()}${philosophy}${faqSection("경북 수학과외<br>자주 묻는 질문", faqs)}${cta("우리 아이 수학,<br>어디서부터 시작할까요?", "학년과 최근 시험 결과를 알려주시면 지금 필요한 수업 방향을 안내해 드립니다.")}${footer}${regionSelector}`;
   return layout({ title, description, body, schemas: [faqSchema(faqs)] });
 }
 
@@ -269,6 +406,11 @@ for (const region of regions) {
     await writeFile(path.join(directory, level.slug, "index.html"), page.html);
     pages.push({ url: `${siteUrl}${levelUrl(region, level)}`, priority: "0.8", title: page.title, description: page.description });
   }
+}
+for (const program of programs) {
+  await mkdir(path.join(dist, "programs", program.slug), { recursive: true });
+  await writeFile(path.join(dist, "programs", program.slug, "index.html"), programPage(program));
+  pages.push({ url: `${siteUrl}${programUrl(program)}`, priority: "0.8", title: program.title, description: program.description });
 }
 const lastmod = buildDate.toISOString().slice(0, 10);
 await writeFile(path.join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${pages.map(({ url, priority }) => `\n  <url><loc>${url}</loc><lastmod>${lastmod}</lastmod><changefreq>weekly</changefreq><priority>${priority}</priority></url>`).join("")}\n</urlset>\n`);

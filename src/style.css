@@ -113,6 +113,15 @@ h2 { margin-bottom: 0; font-size: clamp(34px, 5vw, 54px); line-height: 1.3; }
 footer .footer-regions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 0; font-size: 12px; color: rgba(255,255,255,.5); }
 footer .footer-regions a:hover { color: var(--white); }
 
+.programs { background: var(--paper); }
+.program-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+.program-card { position: relative; display: flex; flex-direction: column; min-height: 210px; padding: 26px 22px; border: 1px solid var(--line); border-radius: 6px; background: var(--white); transition: border-color .2s ease, transform .2s ease; }
+.program-card:hover { border-color: var(--forest); transform: translateY(-2px); }
+.program-card span { padding-right: 26px; color: var(--coral); font-size: 11px; font-weight: 700; letter-spacing: .1em; }
+.program-card strong { margin: 18px 0 10px; font-family: var(--serif); font-size: 20px; line-height: 1.4; }
+.program-card p { margin: 0; color: var(--muted); font-size: 13px; }
+.program-card b { position: absolute; right: 20px; top: 22px; color: var(--forest); }
+
 .modal-open { overflow: hidden; }
 .region-select {
   width: min(920px, calc(100% - 40px));
@@ -185,6 +194,7 @@ footer small { grid-column: 1 / -1; padding-top: 28px; border-top: 1px solid rgb
   .proof-grid > div { min-height: 130px; border-right: 0; border-bottom: 1px solid var(--line); }
   .process-grid, .local-grid, .faq-grid { grid-template-columns: 1fr; gap: 44px; }
   .level-grid { grid-template-columns: 1fr; }
+  .program-grid { grid-template-columns: repeat(2, 1fr); }
   .grade-grid { grid-template-columns: repeat(2, 1fr); }
   .region-grid { grid-template-columns: repeat(3, 1fr); }
   .philosophy { grid-template-columns: 1fr; }
@@ -205,6 +215,8 @@ footer small { grid-column: 1 / -1; padding-top: 28px; border-top: 1px solid rgb
   section { padding: 74px 0; }
   .section-head { grid-template-columns: 1fr; gap: 24px; margin-bottom: 34px; }
   .grade-grid { grid-template-columns: 1fr; }
+  .program-grid { grid-template-columns: 1fr; }
+  .program-card { min-height: auto; }
   .grade { min-height: auto; }
   .region-grid { grid-template-columns: repeat(2, 1fr); }
   .region-link { min-height: 96px; padding: 16px; }
