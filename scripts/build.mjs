@@ -119,6 +119,32 @@ const regionUrl = region => `/regions/${region.slug}/`;
 const levelUrl = (region, level) => `/regions/${region.slug}/${level.slug}/`;
 
 const css = await readFile(path.join(root, "src", "style.css"), "utf8");
+const schools = JSON.parse(await readFile(path.join(root, "src", "schools.json"), "utf8"));
+const schoolLabels = { elementary: "초등학교", middle: "중학교", high: "고등학교" };
+const schoolSource = "학교 목록: 전국초중등학교위치표준데이터(2026년 10월 1일 기준), 분교 제외";
+
+function schoolSection(region, shown = levels) {
+  const r = ctx(region);
+  const total = shown.reduce((sum, level) => sum + schools[region.slug][level.slug].length, 0);
+  const single = shown.length === 1 ? shown[0] : null;
+  const heading = single ? `${r.short} ${schoolLabels[single.slug]}<br>${single.label} 수학과외` : `${r.short} 학교별<br>수학과외 안내`;
+  const copy = single
+    ? `${r.full} ${total}개 ${schoolLabels[single.slug]} 학생의 수업을 상담합니다. 다니는 학교를 알려주시면 그 학교의 시험 범위와 진도, 수행평가 일정에 맞춰 ${single.label} 수학수업을 계획합니다.`
+    : `${r.full} 초등학교·중학교·고등학교 ${total}곳 학생의 수업을 상담합니다. 다니는 학교를 알려주시면 학교별 시험 범위와 진도에 맞춰 수업을 계획합니다.`;
+  const groups = shown.map(level => {
+    const names = schools[region.slug][level.slug];
+    return `<div class="school-group"><h3><a href="${levelUrl(region, level)}">${r.short} ${schoolLabels[level.slug]} 수학과외</a> <span>${names.length}곳</span></h3><ul class="school-list">${names.map(name => `<li>${name}</li>`).join("")}</ul></div>`;
+  }).join("");
+  return `<section class="schools" id="schools"><div class="wrap"><div class="section-head"><div><p class="eyebrow dark">SCHOOLS IN ${region.slug.toUpperCase()}</p><h2>${heading}</h2></div><p>${copy}</p></div><div class="school-groups${single ? " single" : ""}">${groups}</div><p class="school-source">${schoolSource}</p></div></section>`;
+}
+
+function schoolFaq(region, level) {
+  const r = ctx(region);
+  const names = level ? schools[region.slug][level.slug] : levels.map(each => schools[region.slug][each.slug][0]).filter(Boolean);
+  const sample = names.slice(0, 3).join(", ");
+  const label = level ? `${names.length}개 ${schoolLabels[level.slug]}` : "초등학교·중학교·고등학교";
+  return [`${sample} 학생도 수업할 수 있나요?`, `네. ${r.full} ${label} 학생 모두 상담할 수 있으며, 다니는 학교의 시험 범위와 진도에 맞춰 수업합니다.`];
+}
 const regionSelectCards = regions.map(({ slug, name, type, areas }) => `<a class="region-select-card" href="/regions/${slug}/"><strong><span aria-hidden="true"></span>${name}${type}</strong><small>${areas.split(", ").map(area => `<span>${area}</span>`).join("")}</small></a>`).join("");
 
 function layout({ title, description, canonical = siteUrl, body, schemas = [] }) {
@@ -332,9 +358,9 @@ function regionPage(region) {
   const title = `${r.short} 수학과외 | 초등·중등·고등 1:1 수학수업·내신·수능`;
   const description = `${r.full} 수학과외. ${r.areas} 초등·중등·고등 1:1 수학수업. 기초수학, 수학내신, 수능대비까지 맞춤 관리. 전화 상담 ${phone}.`;
   const crumbs = [["홈", "/"], [`${r.short} 수학과외`, url]];
-  const faqs = [[`${r.short} 수학과외는 어떤 학생이 받을 수 있나요?`, `${r.full} 초등 1학년부터 고등 3학년까지 수업합니다. 초등 기초수학, 중등 수학내신, 고등 내신·수능수학을 학년과 목표에 맞춰 안내합니다.`], areaFaq(r), contactFaq(`${r.short} 수학과외`)];
+  const faqs = [schoolFaq(region), [`${r.short} 수학과외는 어떤 학생이 받을 수 있나요?`, `${r.full} 초등 1학년부터 고등 3학년까지 수업합니다. 초등 기초수학, 중등 수학내신, 고등 내신·수능수학을 학년과 목표에 맞춰 안내합니다.`], areaFaq(r), contactFaq(`${r.short} 수학과외`)];
   const localIntro = `<section class="local"><div class="wrap local-grid"><div><p class="eyebrow dark">${r.full} LOCAL CLASS</p><h2>${r.short} 학생에게 맞는<br>현실적인 학습 계획</h2></div><div><p>${r.full} ${r.areas} 인근 초등·중등·고등 학생의 수학 학습을 안내합니다. 지역과 학교에 따라 시험 일정과 진도가 다른 만큼 최근 시험 결과, 현재 교재, 목표 성적을 먼저 확인합니다.</p><p>${r.focus}에 중심을 두고 수업하며, 이동 거리나 일정에 따라 온라인 수업도 함께 고려합니다. 초등은 기초수학과 공부 습관을, 중등은 학교별 수학내신을, 고등은 내신과 수능수학을 개인별 순서로 연결합니다.</p></div></div></section>`;
-  const body = `${hero({ title: `${r.short}<br>수학과외`, copy: `${r.areas}에서 만나는 초등·중등·고등 1:1 수학수업. ${r.focus}에 집중해 공부의 방향을 분명하게 잡습니다.`, eyebrow: `${r.full} · GYEONGBUK`, crumbs })}${proof}${localIntro}${levelSection(region)}${faqSection(`${r.short} 수학과외<br>자주 묻는 질문`, faqs)}${cta(`${r.short} 수학과외<br>상담 안내`, `${r.full} 학생의 학년과 최근 시험 결과를 알려주시면 맞는 수업 방향을 안내해 드립니다.`)}${regionsSection()}${footer}`;
+  const body = `${hero({ title: `${r.short}<br>수학과외`, copy: `${r.areas}에서 만나는 초등·중등·고등 1:1 수학수업. ${r.focus}에 집중해 공부의 방향을 분명하게 잡습니다.`, eyebrow: `${r.full} · GYEONGBUK`, crumbs })}${proof}${localIntro}${schoolSection(region)}${levelSection(region)}${faqSection(`${r.short} 수학과외<br>자주 묻는 질문`, faqs)}${cta(`${r.short} 수학과외<br>상담 안내`, `${r.full} 학생의 학년과 최근 시험 결과를 알려주시면 맞는 수업 방향을 안내해 드립니다.`)}${regionsSection()}${footer}`;
   return layout({ title, description, canonical: `${siteUrl}${url}`, body, schemas: [breadcrumbSchema(crumbs), faqSchema(faqs)] });
 }
 
@@ -346,14 +372,14 @@ function levelPage(region, level) {
   const title = `${r.short} ${level.label} 수학과외 | ${level.titleTail}`;
   const description = `${r.full} ${level.label} 수학과외. ${level.grades.filter(grade => !grade.startsWith("예비")).join("·")} ${keywords} 1:1 맞춤 수업. ${r.areas} 인근 상담 ${phone}.`;
   const crumbs = [["홈", "/"], [`${r.short} 수학과외`, regionUrl(region)], [`${r.short} ${level.label} 수학`, url]];
-  const faqs = [...level.faqs(r), areaFaq(r), contactFaq(`${r.short} ${level.label} 수학과외`)];
+  const faqs = [...level.faqs(r), schoolFaq(region, level), areaFaq(r), contactFaq(`${r.short} ${level.label} 수학과외`)];
   const topicCards = level.topics.map((topic, index) => `<article class="grade" id="${topic.id}"><span>0${index + 1}</span><h3>${r.short} ${level.label} ${topic.keyword}</h3><p>${topic.text(r)}</p></article>`).join("");
   const topics = `<section class="topics" id="topics"><div class="wrap"><div class="section-head"><div><p class="eyebrow dark">${level.eyebrow}</p><h2>${name},<br>이렇게 수업합니다</h2></div><p>${r.full} ${level.student}의 현재 실력과 학교 진도를 먼저 확인하고 ${keywords}을 학생별 비중에 맞춰 설계합니다.</p></div><div class="grade-grid">${topicCards}</div></div></section>`;
   const gradeList = level.grades.map((grade, index) => `<article class="grade"><span>0${index + 1}</span><h3>${r.short} ${grade} 수학과외</h3><p>${gradeInfo[grade]}</p></article>`).join("");
   const gradesBlock = `<section class="grades" id="grades"><div class="wrap"><div class="section-head"><div><p class="eyebrow dark">BY GRADE</p><h2>${r.short} 학년별<br>${level.label} 수학과외</h2></div><p>같은 ${level.label} 과정이라도 학년마다 막히는 단원이 다릅니다. ${r.areas} 인근 학교 진도에 맞춰 학년별 핵심 단원을 준비합니다.</p></div><div class="grade-grid">${gradeList}</div></div></section>`;
   const siblings = levels.filter(other => other !== level).map(other => `<a href="${levelUrl(region, other)}">${r.short} ${other.label} 수학</a>`).join("");
   const localIntro = `<section class="local"><div class="wrap local-grid"><div><p class="eyebrow dark">${r.full} LOCAL CLASS</p><h2>${r.areas.split(", ").slice(0, 2).join("·")} 등<br>${r.short} ${level.label} 수학</h2></div><div><p>${r.full} ${r.areas} 인근 ${level.student}을 대상으로 1:1 수학수업을 진행합니다. ${r.focus}에 중심을 두고, 이동 거리나 일정에 따라 방문 수업과 온라인 수업 중 맞는 방식을 안내합니다.</p><p class="sibling-links">${siblings}<a href="${regionUrl(region)}">${r.short} 수학과외 전체</a></p></div></div></section>`;
-  const body = `${hero({ title: `${r.short} ${level.label}<br>수학과외`, copy: `${r.areas} ${level.student}을 위한 ${level.summary}.`, eyebrow: `${r.full} · ${level.eyebrow}`, crumbs, primary: ["#topics", "수업 내용 보기"], secondary: ["#grades", "학년별 수업 보기"] })}${topics}${gradesBlock}${localIntro}${faqSection(`${name}<br>자주 묻는 질문`, faqs)}${cta(`${name},<br>지금 상담하세요`, `학년과 최근 시험 결과를 알려주시면 ${r.short} ${level.student}에게 맞는 수업 방향을 안내해 드립니다.`)}${regionsSection(level)}${footer}`;
+  const body = `${hero({ title: `${r.short} ${level.label}<br>수학과외`, copy: `${r.areas} ${level.student}을 위한 ${level.summary}.`, eyebrow: `${r.full} · ${level.eyebrow}`, crumbs, primary: ["#topics", "수업 내용 보기"], secondary: ["#grades", "학년별 수업 보기"] })}${topics}${gradesBlock}${schoolSection(region, [level])}${localIntro}${faqSection(`${name}<br>자주 묻는 질문`, faqs)}${cta(`${name},<br>지금 상담하세요`, `학년과 최근 시험 결과를 알려주시면 ${r.short} ${level.student}에게 맞는 수업 방향을 안내해 드립니다.`)}${regionsSection(level)}${footer}`;
   const service = { "@context": "https://schema.org", "@type": "Service", name: `${r.short} ${level.label} 수학과외`, serviceType: `${level.label} 수학과외`, description, provider: { "@type": "EducationalOrganization", name: siteName, url: siteUrl, telephone: "+82-10-2928-3614" }, areaServed: { "@type": "AdministrativeArea", name: `경상북도 ${r.full}` } };
   return { html: layout({ title, description, canonical: `${siteUrl}${url}`, body, schemas: [breadcrumbSchema(crumbs), faqSchema(faqs), service] }), title, description };
 }

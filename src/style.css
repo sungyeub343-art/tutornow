@@ -122,6 +122,17 @@ footer .footer-regions a:hover { color: var(--white); }
 .program-card p { margin: 0; color: var(--muted); font-size: 13px; }
 .program-card b { position: absolute; right: 20px; top: 22px; color: var(--forest); }
 
+.schools { background: var(--white); }
+.school-groups { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: start; }
+.school-groups.single { grid-template-columns: 1fr; }
+.school-group { padding: 26px 24px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); }
+.school-group h3 { margin-bottom: 16px; font-family: var(--serif); font-size: 19px; }
+.school-group h3 a:hover { color: var(--forest); }
+.school-group h3 span { margin-left: 6px; color: var(--coral); font-family: var(--sans); font-size: 13px; }
+.school-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.school-list li { padding: 3px 10px; border-radius: 999px; background: var(--white); color: var(--muted); font-size: 13px; }
+.school-source { margin: 18px 0 0; color: var(--muted); font-size: 12px; }
+
 .modal-open { overflow: hidden; }
 .region-select {
   width: min(920px, calc(100% - 40px));
@@ -193,7 +204,7 @@ footer small { grid-column: 1 / -1; padding-top: 28px; border-top: 1px solid rgb
   .proof-grid { grid-template-columns: 1fr; }
   .proof-grid > div { min-height: 130px; border-right: 0; border-bottom: 1px solid var(--line); }
   .process-grid, .local-grid, .faq-grid { grid-template-columns: 1fr; gap: 44px; }
-  .level-grid { grid-template-columns: 1fr; }
+  .level-grid, .school-groups { grid-template-columns: 1fr; }
   .program-grid { grid-template-columns: repeat(2, 1fr); }
   .grade-grid { grid-template-columns: repeat(2, 1fr); }
   .region-grid { grid-template-columns: repeat(3, 1fr); }
