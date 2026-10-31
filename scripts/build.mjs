@@ -112,7 +112,17 @@ const phone = "010-2928-3614";
 const tel = `tel:${phone.replaceAll("-", "")}`;
 const siteName = "경북 수학과외";
 const ogImage = "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=1200&q=82";
-const buildDate = new Date();
+// 페이지 내용이 실제로 바뀐 날짜. 내용을 고치면 해당 날짜도 함께 갱신합니다.
+const contentDates = {
+  home: { published: "2026-10-01", updated: "2026-10-31" },
+  region: { published: "2026-10-01", updated: "2026-10-31" },
+  level: { published: "2026-10-19", updated: "2026-10-31" }
+};
+const programDates = {
+  online: "2026-10-24", winter: "2026-10-24", exam: "2026-10-24", basic: "2026-10-24", "suneung-2028": "2026-10-24",
+  "common-math": "2026-10-27", subjects: "2026-10-27", descriptive: "2026-10-27", advanced: "2026-10-27", "choosing-tutor": "2026-10-27",
+  "elementary-basics": "2026-10-28", "first-middle-exam": "2026-10-28", "wrong-answer-notes": "2026-10-28", "grade-up": "2026-10-28", "vocational-high": "2026-10-28"
+};
 
 const ctx = region => ({ short: region.name, full: `${region.name}${region.type}`, areas: region.areas, focus: region.focus });
 const regionUrl = region => `/regions/${region.slug}/`;
@@ -123,37 +133,57 @@ const schools = JSON.parse(await readFile(path.join(root, "src", "schools.json")
 const schoolLabels = { elementary: "초등학교", middle: "중학교", high: "고등학교" };
 const schoolSource = "학교 목록: 전국초중등학교위치표준데이터(2026년 10월 1일 기준), 분교 제외";
 
+const officeName = slug => schools[slug].office.replace("경상북도", "");
+const shortSchool = name => name.replace(/여자고등학교$/, "여고").replace(/고등학교$/, "고").replace(/여자중학교$/, "여중").replace(/중학교$/, "중").replace(/초등학교$/, "초");
+
+function areaGroups(list) {
+  const map = new Map();
+  for (const { name, area } of list) map.set(area, [...(map.get(area) || []), name]);
+  return [...map].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0], "ko"));
+}
+
+function areaSummary(region, level) {
+  const list = schools[region.slug][level.slug];
+  const groups = areaGroups(list);
+  const top = groups.filter(([, names]) => names.length > 1).slice(0, 3);
+  const spread = `${ctx(region).full}의 ${schoolLabels[level.slug]} ${list.length}곳은 ${groups.length}개 읍·면·동에 있습니다.`;
+  return top.length ? `${spread} ${top.map(([area, names]) => `${area}에 ${names.length}곳(${names.map(shortSchool).join("·")})`).join(", ")}이 모여 있습니다.` : spread;
+}
+
 function schoolSection(region, shown = levels) {
   const r = ctx(region);
-  const total = shown.reduce((sum, level) => sum + schools[region.slug][level.slug].length, 0);
+  const data = schools[region.slug];
   const single = shown.length === 1 ? shown[0] : null;
   const heading = single ? `${r.short} ${schoolLabels[single.slug]}<br>${single.label} 수학과외` : `${r.short} 학교별<br>수학과외 안내`;
   const copy = single
-    ? `${r.full} ${total}개 ${schoolLabels[single.slug]} 학생의 수업을 상담합니다. 다니는 학교를 알려주시면 그 학교의 시험 범위와 진도, 수행평가 일정에 맞춰 ${single.label} 수학수업을 계획합니다.`
-    : `${r.full} 초등학교·중학교·고등학교 ${total}곳 학생의 수업을 상담합니다. 다니는 학교를 알려주시면 학교별 시험 범위와 진도에 맞춰 수업을 계획합니다.`;
+    ? `${r.full} ${officeName(region.slug)} 관할 ${schoolLabels[single.slug]} ${data[single.slug].length}곳 학생의 수업을 상담합니다. 다니는 학교를 알려주시면 그 학교의 시험 범위와 진도, 수행평가 일정에 맞춰 ${single.label} 수학수업을 계획합니다.`
+    : `${r.full}에는 ${officeName(region.slug)} 관할 초등학교 ${data.elementary.length}곳, 중학교 ${data.middle.length}곳, 고등학교 ${data.high.length}곳이 있습니다. 다니는 학교를 알려주시면 학교별 시험 범위와 진도에 맞춰 수업을 계획합니다.`;
   const groups = shown.map(level => {
-    const names = schools[region.slug][level.slug];
-    return `<div class="school-group"><h3><a href="${levelUrl(region, level)}">${r.short} ${schoolLabels[level.slug]} 수학과외</a> <span>${names.length}곳</span></h3><ul class="school-list">${names.map(name => `<li>${name}</li>`).join("")}</ul></div>`;
+    const list = data[level.slug];
+    const body = single
+      ? `<ul class="school-areas">${areaGroups(list).map(([area, names]) => `<li><b>${area}</b><span>${names.join(", ")}</span></li>`).join("")}</ul>`
+      : `<ul class="school-list">${list.map(({ name }) => `<li>${name}</li>`).join("")}</ul>`;
+    return `<div class="school-group"><h3><a href="${levelUrl(region, level)}">${r.short} ${schoolLabels[level.slug]} 수학과외</a> <span>${list.length}곳</span></h3><p class="school-summary">${areaSummary(region, level)}</p>${body}</div>`;
   }).join("");
   return `<section class="schools" id="schools"><div class="wrap"><div class="section-head"><div><p class="eyebrow dark">SCHOOLS IN ${region.slug.toUpperCase()}</p><h2>${heading}</h2></div><p>${copy}</p></div><div class="school-groups${single ? " single" : ""}">${groups}</div><p class="school-source">${schoolSource}</p></div></section>`;
 }
 
 function schoolFaq(region, level) {
   const r = ctx(region);
-  const names = level ? schools[region.slug][level.slug] : levels.map(each => schools[region.slug][each.slug][0]).filter(Boolean);
+  const names = (level ? schools[region.slug][level.slug] : levels.map(each => schools[region.slug][each.slug][0]).filter(Boolean)).map(({ name }) => name);
   const sample = names.slice(0, 3).join(", ");
   const label = level ? `${names.length}개 ${schoolLabels[level.slug]}` : "초등학교·중학교·고등학교";
   return [`${sample} 학생도 수업할 수 있나요?`, `네. ${r.full} ${label} 학생 모두 상담할 수 있으며, 다니는 학교의 시험 범위와 진도에 맞춰 수업합니다.`];
 }
 const regionSelectCards = regions.map(({ slug, name, type, areas }) => `<a class="region-select-card" href="/regions/${slug}/"><strong><span aria-hidden="true"></span>${name}${type}</strong><small>${areas.split(", ").map(area => `<span>${area}</span>`).join("")}</small></a>`).join("");
 
-function layout({ title, description, canonical = siteUrl, body, schemas = [] }) {
+function layout({ title, description, canonical = `${siteUrl}/`, body, schemas = [] }) {
   const organization = {
     "@context": "https://schema.org", "@type": "EducationalOrganization", name: siteName, url: siteUrl, telephone: "+82-10-2928-3614", description,
     areaServed: regions.map(({ name, type }) => ({ "@type": "AdministrativeArea", name: `경상북도 ${name}${type}` }))
   };
   const jsonLd = [organization, ...schemas].map(schema => `<script type="application/ld+json">${JSON.stringify(schema)}</script>`).join("");
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="naver-site-verification" content="da1ddc6d11fbaf9ca190d7ff71413f40b0220036"><meta name="google-site-verification" content="mgftAe9RcXTmkuF04LUcLRUBY-naUxZumX5YV-7Uu88"><title>${title}</title><meta name="description" content="${description}"><meta name="robots" content="index,follow"><link rel="canonical" href="${canonical}"><link rel="alternate" type="application/rss+xml" title="${siteName}" href="${siteUrl}/rss.xml"><meta property="og:type" content="website"><meta property="og:site_name" content="${siteName}"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="${title}"><meta property="og:description" content="${description}"><meta property="og:url" content="${canonical}"><meta property="og:image" content="${ogImage}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${title}"><meta name="twitter:description" content="${description}"><meta name="twitter:image" content="${ogImage}"><link rel="icon" href="/favicon.ico" sizes="32x32"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="/assets/style.css">${jsonLd}</head><body><nav><div class="wrap nav-inner"><a class="brand" href="/">${siteName}</a><div class="nav-links"><a href="/#program">수업 방식</a><a href="/#levels">초등·중등·고등</a><a href="/#regions">지역 찾기</a><a href="${tel}">전화 상담</a></div></div></nav>${body}<div class="mobile-bar"><a href="${tel}">전화 상담</a><a href="/#regions">우리 지역 찾기</a></div></body></html>`;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="naver-site-verification" content="da1ddc6d11fbaf9ca190d7ff71413f40b0220036"><meta name="google-site-verification" content="mgftAe9RcXTmkuF04LUcLRUBY-naUxZumX5YV-7Uu88"><title>${title}</title><meta name="description" content="${description}"><meta name="robots" content="index,follow"><link rel="canonical" href="${canonical}"><link rel="alternate" type="application/rss+xml" title="${siteName}" href="${siteUrl}/rss.xml"><meta property="og:type" content="website"><meta property="og:site_name" content="${siteName}"><meta property="og:locale" content="ko_KR"><meta property="og:title" content="${title}"><meta property="og:description" content="${description}"><meta property="og:url" content="${canonical}"><meta property="og:image" content="${ogImage}"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${title}"><meta name="twitter:description" content="${description}"><meta name="twitter:image" content="${ogImage}"><link rel="icon" href="/favicon.ico" sizes="32x32"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="preconnect" href="https://images.unsplash.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700;800&family=Public+Sans:wght@400;500;600;700&display=swap"><link rel="stylesheet" href="/assets/style.css">${jsonLd}</head><body><nav><div class="wrap nav-inner"><a class="brand" href="/">${siteName}</a><div class="nav-links"><a href="/#program">수업 방식</a><a href="/#levels">초등·중등·고등</a><a href="/#regions">지역 찾기</a><a href="${tel}">전화 상담</a></div></div></nav>${body}<div class="mobile-bar"><a href="${tel}">전화 상담</a><a href="/#regions">우리 지역 찾기</a></div></body></html>`;
 }
 
 function hero({ title, copy, eyebrow = "GYEONGBUK MATH TUTORING", crumbs = [], primary = ["#levels", "초등·중등·고등 수업 보기"], secondary = ["#regions", "22개 시군 찾기"] }) {
@@ -613,7 +643,9 @@ function levelPage(region, level) {
   const faqs = [...level.faqs(r), schoolFaq(region, level), areaFaq(r), contactFaq(`${r.short} ${level.label} 수학과외`)];
   const topicCards = level.topics.map((topic, index) => `<article class="grade" id="${topic.id}"><span>0${index + 1}</span><h3>${r.short} ${level.label} ${topic.keyword}</h3><p>${topic.text(r)}</p></article>`).join("");
   const topics = `<section class="topics" id="topics"><div class="wrap"><div class="section-head"><div><p class="eyebrow dark">${level.eyebrow}</p><h2>${name},<br>이렇게 수업합니다</h2></div><p>${r.full} ${level.student}의 현재 실력과 학교 진도를 먼저 확인하고 ${keywords}을 학생별 비중에 맞춰 설계합니다.</p></div><div class="grade-grid">${topicCards}</div></div></section>`;
-  const gradeList = level.grades.map((grade, index) => `<article class="grade"><span>0${index + 1}</span><h3>${r.short} ${grade} 수학과외</h3><p>${gradeInfo[grade]}</p></article>`).join("");
+  const localSchools = schools[region.slug][level.slug];
+  const pickSchools = index => [...new Set([0, 1].map(offset => localSchools[(index * 2 + offset) % localSchools.length]?.name).filter(Boolean))].map(shortSchool).join("·");
+  const gradeList = level.grades.map((grade, index) => `<article class="grade"><span>0${index + 1}</span><h3>${r.short} ${grade} 수학과외</h3><p>${r.short} ${grade} 수업은 ${pickSchools(index)} 등 지역 ${schoolLabels[level.slug]}의 진도와 시험 일정을 기준으로 합니다. ${gradeInfo[grade]}</p></article>`).join("");
   const gradesBlock = `<section class="grades" id="grades"><div class="wrap"><div class="section-head"><div><p class="eyebrow dark">BY GRADE</p><h2>${r.short} 학년별<br>${level.label} 수학과외</h2></div><p>같은 ${level.label} 과정이라도 학년마다 막히는 단원이 다릅니다. ${r.areas} 인근 학교 진도에 맞춰 학년별 핵심 단원을 준비합니다.</p></div><div class="grade-grid">${gradeList}</div></div></section>`;
   const siblings = levels.filter(other => other !== level).map(other => `<a href="${levelUrl(region, other)}">${r.short} ${other.label} 수학</a>`).join("");
   const localIntro = `<section class="local"><div class="wrap local-grid"><div><p class="eyebrow dark">${r.full} LOCAL CLASS</p><h2>${r.areas.split(", ").slice(0, 2).join("·")} 등<br>${r.short} ${level.label} 수학</h2></div><div><p>${r.full} ${r.areas} 인근 ${level.student}을 대상으로 1:1 수학수업을 진행합니다. ${r.focus}에 중심을 두고, 이동 거리나 일정에 따라 방문 수업과 온라인 수업 중 맞는 방식을 안내합니다.</p><p class="sibling-links">${siblings}<a href="${regionUrl(region)}">${r.short} 수학과외 전체</a></p></div></div></section>`;
@@ -658,27 +690,31 @@ await rm(dist, { recursive: true, force: true });
 await mkdir(path.join(dist, "assets"), { recursive: true });
 await writeFile(path.join(dist, "assets", "style.css"), css);
 await writeFile(path.join(dist, "index.html"), homePage());
-const pages = [{ url: `${siteUrl}/`, priority: "1.0", title: "경북 수학과외 | 초등·중등·고등 1:1 수학수업·내신·수능대비", description: "경상북도 22개 시군 초등·중등·고등 1:1 수학과외." }];
+const pages = [{ url: `${siteUrl}/`, priority: "1.0", ...contentDates.home, title: "경북 수학과외 | 초등·중등·고등 1:1 수학수업·내신·수능대비", description: "경상북도 22개 시군 초등·중등·고등 1:1 수학과외." }];
 for (const region of regions) {
   const directory = path.join(dist, "regions", region.slug);
   await mkdir(directory, { recursive: true });
   await writeFile(path.join(directory, "index.html"), regionPage(region));
-  pages.push({ url: `${siteUrl}${regionUrl(region)}`, priority: "0.9", title: `${region.name} 수학과외 | 초등·중등·고등 1:1 수학수업·내신·수능`, description: `${region.name}${region.type} 초등·중등·고등 1:1 수학과외.` });
+  pages.push({ url: `${siteUrl}${regionUrl(region)}`, priority: "0.9", ...contentDates.region, title: `${region.name} 수학과외 | 초등·중등·고등 1:1 수학수업·내신·수능`, description: `${region.name}${region.type} 초등·중등·고등 1:1 수학과외.` });
   for (const level of levels) {
     const page = levelPage(region, level);
     await mkdir(path.join(directory, level.slug), { recursive: true });
     await writeFile(path.join(directory, level.slug, "index.html"), page.html);
-    pages.push({ url: `${siteUrl}${levelUrl(region, level)}`, priority: "0.8", title: page.title, description: page.description });
+    pages.push({ url: `${siteUrl}${levelUrl(region, level)}`, priority: "0.8", ...contentDates.level, title: page.title, description: page.description });
   }
 }
 for (const program of programs) {
   await mkdir(path.join(dist, "programs", program.slug), { recursive: true });
   await writeFile(path.join(dist, "programs", program.slug, "index.html"), programPage(program));
-  pages.push({ url: `${siteUrl}${programUrl(program)}`, priority: "0.8", title: program.title, description: program.description });
+  pages.push({ url: `${siteUrl}${programUrl(program)}`, priority: "0.8", published: programDates[program.slug], updated: programDates[program.slug], title: program.title, description: program.description });
 }
-const lastmod = buildDate.toISOString().slice(0, 10);
-await writeFile(path.join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${pages.map(({ url, priority }) => `\n  <url><loc>${url}</loc><lastmod>${lastmod}</lastmod><changefreq>weekly</changefreq><priority>${priority}</priority></url>`).join("")}\n</urlset>\n`);
-await writeFile(path.join(dist, "rss.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>${siteName}</title><link>${siteUrl}/</link><description>경상북도 22개 시군 초등·중등·고등 1:1 수학과외</description><language>ko</language><lastBuildDate>${buildDate.toUTCString()}</lastBuildDate>${pages.map(({ url, title, description }) => `\n<item><title>${title}</title><link>${url}</link><guid>${url}</guid><description>${description}</description><pubDate>${buildDate.toUTCString()}</pubDate></item>`).join("")}\n</channel></rss>\n`);
+for (const page of pages) {
+  if (!page.published || !page.updated) throw new Error(`날짜가 없는 페이지: ${page.url}`);
+}
+const rssDate = date => new Date(`${date}T09:00:00+09:00`).toUTCString();
+const latest = pages.map(page => page.updated).sort().at(-1);
+await writeFile(path.join(dist, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${pages.map(({ url, priority, updated }) => `\n  <url><loc>${url}</loc><lastmod>${updated}</lastmod><changefreq>weekly</changefreq><priority>${priority}</priority></url>`).join("")}\n</urlset>\n`);
+await writeFile(path.join(dist, "rss.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0"><channel><title>${siteName}</title><link>${siteUrl}/</link><description>경상북도 22개 시군 초등·중등·고등 1:1 수학과외</description><language>ko</language><lastBuildDate>${rssDate(latest)}</lastBuildDate>${[...pages].sort((a, b) => b.published.localeCompare(a.published)).map(({ url, title, description, published }) => `\n<item><title>${title}</title><link>${url}</link><guid>${url}</guid><description>${description}</description><pubDate>${rssDate(published)}</pubDate></item>`).join("")}\n</channel></rss>\n`);
 await writeFile(path.join(dist, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
 await writeFile(path.join(dist, "CNAME"), "tutornow.kr\n");
 await writeFile(path.join(dist, ".nojekyll"), "");
